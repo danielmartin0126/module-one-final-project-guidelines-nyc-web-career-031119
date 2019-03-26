@@ -30,6 +30,7 @@ gotta_catch_em_all.each do |i|
   stat_special_defense = pokemon_hash1["stats"].find {|each| each["stat"]["name"] == "special-defense"}["base_stat"]
 
   capture_rate = pokemon_hash2["capture_rate"]
+  pokeid = i
 
   genus = pokemon_hash2["genera"].find {|each| each["language"]['name'] == "en"}["genus"]
   flavor_text = pokemon_hash2["flavor_text_entries"].select {|each| each["language"]['name'] == "en"}.sample["flavor_text"]
@@ -47,5 +48,6 @@ gotta_catch_em_all.each do |i|
   attack: stat_attack,
   defense: stat_defense,
   hp: stat_hp,
-  capture_rate: capture_rate)
+  capture_rate: capture_rate,
+  pokeid: pokeid)
 end
