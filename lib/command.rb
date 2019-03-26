@@ -20,10 +20,7 @@ def new_trainer
   Trainer.find_or_create_by(name: rival_name)
   puts "Oak : That's right! I remember now! His name is #{rival_name}! #{name}! Your very own POKEMON legend is about to unfold! A world of dreams and adventures with POKEMON awaits! Let's go!"
 end
-#
-# def main_menu
-# end
-#
+
 # def encounter
 #   # create new pokemon instance from api
 #   # bonus- don't allow encounter if you have 6 pokemon
