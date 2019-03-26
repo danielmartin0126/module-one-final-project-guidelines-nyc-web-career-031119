@@ -1,6 +1,7 @@
 current_user = nil
 rival_user = ""
 def welcome
+
  # if trainer database is empty, run new_trainer automatically
  puts "Hi, select on option: -Log In -New Trainer"
  input = gets.chomp
@@ -79,6 +80,7 @@ def encounter(current_user)
   main_menu(current_user)
   # bonus- don't allow encounter if you have 6 pokemon
 end
+
 #
 def display_pokemon(pokemon)
   puts "You captured #{pokemon.name.upcase}!"
