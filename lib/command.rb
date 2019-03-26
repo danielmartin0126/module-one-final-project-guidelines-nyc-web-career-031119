@@ -1,24 +1,24 @@
 current_user = nil
 rival_user = ""
 def welcome
-
- # if trainer database is empty, run new_trainer automatically
- puts "Hi, select on option: -Log In -New Trainer"
- input = gets.chomp
- if input.downcase == "log in"
-   check_log_in
- elsif input.downcase == "new trainer"
-   new_trainer
- else
-   puts "Input valid command"
-   welcome
+  # if trainer database is empty, run new_trainer automatically
+  puts "Hi, select on option: -Log In -New Trainer -Exit"
+  input = gets.chomp
+  if input.downcase == "log in"
+    check_log_in
+  elsif input.downcase == "new trainer"
+    new_trainer
+  elsif input.downcase == "exit"
+    exit
+  else
+    puts "Input valid command"
+    welcome
  end
 end
 
 def new_trainer
   puts "Oak : Hello there! Welcome to the world of POKEMON! My name is OAK! People call me the POKEMON PROF! This world is inhabited by creatures called POKEMON! For some people, POKEMON are pets. Others use them for fights. Myself...I study POKEMON as a profession. First, what is your name?"
   name = gets.chomp
-  binding.pry
   current_user = Trainer.find_or_create_by(name: name)
   puts "Oak : Right! So your name is #{name}! This is my grandson. He's been your rival since you were a baby. ...Erm, what is his name again?"
   rival_name = gets.chomp
@@ -49,41 +49,51 @@ end
 
 
 def encounter(current_user)
-  # create new pokemon instance from api
+  # bonus- don't allow encounter if you have 6 pokemon
   pokemon = Pokemon.order("RANDOM()").first
   puts "You have encountered a wild #{pokemon.name.upcase}!"
-  # present pokemon with HP
   puts pokemon.name.upcase
   puts "L: #{pokemon.level}"
   puts "HP: #{pokemon.hp}/#{pokemon.hp}"
-  # gives option to Catch or Run
+  catch_or_run(current_user, pokemon)
+end
 
+def catch_or_run(current_user, pokemon)
   puts "Select an option:"
   puts "1. Catch"
   puts "2. Run"
-  input = gets.chomp
   # For Catch => can succeed or fail, success adds to pokemon list
-  if input == 1 || "Catch"
+  input = gets.chomp
+  if input == "1" || input.downcase == "catch"
     CapturedPokemon.find_or_create_by(trainer_id: current_user.id, pokemon_id: pokemon.id)
+    puts "You captured #{pokemon.name.upcase}!"
     display_pokemon(pokemon)
-
-  elsif input == 2 || "Run"
+    another_pokemon?(current_user)
+  elsif input == "2" || input.downcase == "run"
     puts "You got away safely."
-    puts "Would you like to look for another Pokemon? y/n"
-    answer = gets.chomp
-    if answer == "y"
-      encounter
-    else
-      main_menu(current_user)
-    end
+    another_pokemon?(current_user)
+  else
+    puts "Input valid command"
+    catch_or_run(current_user, pokemon)
   end
-  main_menu(current_user)
-  # bonus- don't allow encounter if you have 6 pokemon
 end
 
-#
+def another_pokemon?(current_user)
+  puts "Would you like to look for another Pokemon? y/n"
+  while answer = gets.chomp
+    case answer
+    when "y"
+      encounter(current_user)
+    when "n"
+      main_menu(current_user)
+    else
+      puts "Input valid command"
+      puts "Would you like to look for another Pokemon? y/n"
+    end
+  end
+end
+
 def display_pokemon(pokemon)
-  puts "You captured #{pokemon.name.upcase}!"
   puts pokemon.level
   puts pokemon.hp
   puts pokemon.genus
