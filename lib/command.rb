@@ -54,10 +54,10 @@ def main_menu(current_user)
    puts 1
    encounter(current_user)
  when "view pokemon"
-   puts 2
-   # view
+   view_team(current_user)
  when "rivals lookup"
-   puts 3
+   # view_team()
+   puts "3"
  when "exit"
    puts "Thanks for Playing"
    exit
@@ -69,7 +69,10 @@ end
 
 
 def encounter(current_user)
-  # bonus- don't allow encounter if you have 6 pokemon
+  if current_user.pokemons.length >= 6
+    puts "You already have six Pokemon. You must release one in order to catch another Pokemon."
+    main_menu(current_user)
+  end
   pokemon = Pokemon.order("RANDOM()").first
   puts "You have encountered a wild #{pokemon.name.upcase}!"
   puts pokemon.name.upcase
@@ -99,12 +102,17 @@ def catch_or_run(current_user, pokemon)
 end
 
 def another_pokemon?(current_user)
-  prompt = "Would you like to look for another Pokemon? y/n"
-  case get_yes_or_no(prompt)
-  when "y"
-    encounter(current_user)
-  when "n"
+  if (CapturedPokemon.where trainer_id: current_user.id).length >= 6
+    puts "You already have six Pokemon. You must release one in order to catch another Pokemon."
     main_menu(current_user)
+  else
+    prompt = "Would you like to look for another Pokemon? y/n"
+    case get_yes_or_no(prompt)
+    when "y"
+      encounter(current_user)
+    when "n"
+      main_menu(current_user)
+    end
   end
 end
 
@@ -128,8 +136,7 @@ def get_yes_or_no(prompt)
   answer
 end
 
-def display_pokemon(pokemon)
-
+def display_pokemon(pokemon, user)
   puts "L: #{pokemon.level}"
   puts "HP: #{pokemon.hp}"
   puts pokemon.genus
@@ -148,17 +155,37 @@ def display_pokemon(pokemon)
   prompt = "More Options? y/n"
   case get_yes_or_no(prompt)
   when 'y'
-    puts "-Give Nickname -Release -other functions "
+    pokemon_options(pokemon,user)
   end
 end
 
+def pokemon_options(pokemon, user)
+  puts "-Release Pokemon -Change name -Back"
+  case gets.chomp.downcase
+  when "release pokemon"
+    doomed = CapturedPokemon.find_by(pokemon_id: pokemon.id, trainer_id: user.id)
+    CapturedPokemon.destroy(doomed.id)
+    view_team(user)
+  when "change name"
+  when "back"
+    display_pokemon(pokemon, user)
+  else
+    puts "Invalid command"
+    pokemon_options(pokemon, user)
+  end
+
+end
+
 def view_team(user)
-  user.pokemons.each do |pokemon|
+  binding.pry
+  user.reload.pokemons.each do |pokemon|
     puts pokemon.name
   end
   puts "SELECT A POKEMON"
   input = gets.chomp
-  view = user.pokemons.where name: input.downcase
-  binding.
-  display_pokemon(view[0])
+  if input == "main menu"
+    main_menu(user)
+  end
+  view = user.pokemons.find_by(name: input.downcase)
+  display_pokemon(view, user)
 end
