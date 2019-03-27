@@ -16,6 +16,24 @@ def welcome
  end
 end
 
+def check_log_in
+  puts "Enter your username:"
+  user_name = gets.chomp
+  if Trainer.exists? name: user_name
+    current_user = Trainer.where name: user_name
+    main_menu(current_user[0])
+  else
+    puts "The is currently no account with that username. Would you like to try again, or create new account?"
+    puts "1. Try again 2. New account"
+    response = gets.chomp
+    if response == "1" || response.downcase == "try again"
+      check_log_in
+    elsif response == "2" || response.downcase == "new account"
+      new_trainer
+    end
+  end
+end
+
 def new_trainer
   puts "Oak : Hello there! Welcome to the world of POKEMON! My name is OAK! People call me the POKEMON PROF! This world is inhabited by creatures called POKEMON! For some people, POKEMON are pets. Others use them for fights. Myself...I study POKEMON as a profession. First, what is your name?"
   name = gets.chomp
@@ -26,6 +44,8 @@ def new_trainer
   puts "Oak : That's right! I remember now! His name is #{rival_name}! #{name}! Your very own POKEMON legend is about to unfold! A world of dreams and adventures with POKEMON awaits! Let's go!"
   main_menu(current_user)
 end
+
+
 
 def main_menu(current_user)
  puts "-Catch Pokemon -View Pokemon -Rivals Lookup -Exit"
@@ -109,8 +129,9 @@ def get_yes_or_no(prompt)
 end
 
 def display_pokemon(pokemon)
-  puts pokemon.level
-  puts pokemon.hp
+
+  puts "L: #{pokemon.level}"
+  puts "HP: #{pokemon.hp}"
   puts pokemon.genus
   puts pokemon.flavor_text
   puts "Type: #{pokemon.primary_type}"
@@ -118,11 +139,11 @@ def display_pokemon(pokemon)
    puts "Secondary Type: #{pokemon.secondary_type}"
   end
   puts "Stats:"
-  puts pokemon.speed
-  puts pokemon.attack
-  puts pokemon.defense
-  puts pokemon.special_attack
-  puts pokemon.special_defense
+  puts "Speed: #{pokemon.speed}"
+  puts "Attack: #{pokemon.attack}"
+  puts "Defense: #{pokemon.defense}"
+  puts "Special Attack: #{pokemon.special_attack}"
+  puts "Special Defense: #{pokemon.special_defense}"
 
   prompt = "More Options? y/n"
   case get_yes_or_no(prompt)
@@ -130,6 +151,7 @@ def display_pokemon(pokemon)
     puts "-Give Nickname -Release -other functions "
   end
 end
+
 # #
 
 #
