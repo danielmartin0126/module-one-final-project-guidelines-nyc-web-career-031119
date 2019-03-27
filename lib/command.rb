@@ -19,7 +19,6 @@ puts "   ?MMM>  YMMMMMM! MM   `?MMRb.    `'''   lL MMMM XM IMMM"
 puts "    MMMX   'MMMM'  MM       ~%:           lMh.'''dMI IMMP"
 puts "    'MMM.                                             IMX"
 puts "     ~MlM                                             IMP"
-
 puts
 puts
 puts "                          FLATIRON EDITION"
@@ -65,9 +64,8 @@ end
 def wrong_log_in
   system 'clear'
   puts "@==================================@"
-  puts "That username does not exist. Would"
-  puts "you like to try again or create new account?"
-  puts "Enter your username or New Account"
+  puts "That username does not exist."
+  puts "Re-enter a username or New Account"
   puts "@==================================@"
   response = gets.chomp
   if Trainer.exists? name: response.upcase
@@ -105,7 +103,7 @@ def new_trainer
     puts "@==============================================================================@"
     rival_name = gets.chomp
   end
-  
+
   rival_user = Trainer.find_or_create_by(name: rival_name)
   add_six(rival_user)
 
@@ -120,20 +118,20 @@ def main_menu(current_user)
   system "clear"
   puts "@==============================================================@"
   puts " Hi #{current_user.name}! Select an option:\n "
- puts " -Catch Pokemon\n -View Pokemon\n -Trainer Lookup\n -Settings\n -Exit"
- puts "@==============================================================@"
+  puts " -Catch Pokemon\n -View Pokemon\n -Trainer Lookup\n -Settings\n -Exit"
+  puts "@==============================================================@"
 
- case gets.chomp.downcase
- when "catch pokemon"
+
+ input = gets.chomp.downcase
+ if input.include?('catch')
    encounter(current_user)
- when "view pokemon"
+ elsif input.include?('view')
    view_team(current_user)
- when "trainer lookup"
-   system "clear"
+ elsif input.include?('lookup')
    rival_exists?(current_user)
- when "settings"
+ elsif input.include?('settings')
    settings(current_user)
- when "exit"
+ elsif input.include?('exit')
    puts "Thanks for Playing"
    exit
  else
@@ -289,7 +287,6 @@ def view_team(current_user)
     puts "@==================================@"
     puts "#{current_user.name}'s team\n \n"
     puts "--------------"
-
     current_user.reload.pokemons.each do |pokemon|
       puts pokemon.name.upcase
       puts "--------------"
@@ -312,7 +309,7 @@ def view_team(current_user)
   end
 end
 
-def rival_exists?
+def rival_exists?(current_user)
   system "clear"
   puts "@==================================@"
   puts " Enter a rival Trainer's name:"
@@ -367,7 +364,6 @@ end
 def settings(current_user)
   system "clear"
   puts "@==================================@"
-
   puts "Select an option:\n "
   puts "Change Trainer name"
   puts "Back"
@@ -385,6 +381,12 @@ def settings(current_user)
   else
     puts "Invalid command"
     settings(current_user)
+  end
+end
+
+def add_six(user)
+  6.times do
+  CapturedPokemon.find_or_create_by(trainer_id: user.id, pokemon_id: (Pokemon.order("RANDOM()").first.id))
   end
 end
 
@@ -406,6 +408,8 @@ def walking
   puts "|                      |"
   puts "|                      |"
   puts "|                      |"
+  puts "|                      |"
+  puts "|                      |"
   puts "|  웃                  |"
   puts "|//////////////////////|"
   puts "|                      |"
@@ -413,6 +417,8 @@ def walking
   sleep(1.0/2.0)
   system "clear"
   puts "@======================@"
+  puts "|                      |"
+  puts "|                      |"
   puts "|                      |"
   puts "|                      |"
   puts "|                      |"
@@ -428,6 +434,8 @@ def walking
   puts "|                      |"
   puts "|                      |"
   puts "|                      |"
+  puts "|                      |"
+  puts "|                      |"
   puts "|         웃           |"
   puts "|//////////////////////|"
   puts "|                      |"
@@ -439,6 +447,8 @@ def walking
   puts "|                      |"
   puts "|                      |"
   puts "|                      |"
+  puts "|                      |"
+  puts "|                      |"
   puts "|              웃      |"
   puts "|//////////////////////|"
   puts "|                      |"
@@ -446,6 +456,8 @@ def walking
   sleep(1.0/2.0)
   system "clear"
   puts "@======================@"
+  puts "|                      |"
+  puts "|                      |"
   puts "|                      |"
   puts "|                      |"
   puts "|                      |"
@@ -465,6 +477,8 @@ def encounter_animation
   puts "|                      |"
   puts "|                      |"
   puts "|                      |"
+  puts "|                      |"
+  puts "|                      |"
   puts "|                   웃 |"
   puts "|//////////////////////|"
   puts "|                      |"
@@ -473,6 +487,8 @@ def encounter_animation
   system "clear"
   puts "@======================@"
   puts "|@@@@                  |"
+  puts "|                      |"
+  puts "|                      |"
   puts "|                      |"
   puts "|                      |"
   puts "|                      |"
@@ -487,6 +503,8 @@ def encounter_animation
   puts "|                      |"
   puts "|                      |"
   puts "|                      |"
+  puts "|                      |"
+  puts "|                      |"
   puts "|                   웃 |"
   puts "|//////////////////////|"
   puts "|                      |"
@@ -495,6 +513,8 @@ def encounter_animation
   system "clear"
   puts "@======================@"
   puts "|@@@@@@@@              |"
+  puts "|                      |"
+  puts "|                      |"
   puts "|                      |"
   puts "|                      |"
   puts "|                      |"
@@ -509,6 +529,8 @@ def encounter_animation
   puts "|                      |"
   puts "|                      |"
   puts "|                      |"
+  puts "|                      |"
+  puts "|                      |"
   puts "|                   웃 |"
   puts "|//////////////////////|"
   puts "|                      |"
@@ -517,6 +539,8 @@ def encounter_animation
   system "clear"
   puts "@======================@"
   puts "|@@@@@@@@@@@@          |"
+  puts "|                      |"
+  puts "|                      |"
   puts "|                      |"
   puts "|                      |"
   puts "|                      |"
@@ -531,6 +555,8 @@ def encounter_animation
   puts "|                      |"
   puts "|                      |"
   puts "|                      |"
+  puts "|                      |"
+  puts "|                      |"
   puts "|                   웃 |"
   puts "|//////////////////////|"
   puts "|                      |"
@@ -539,6 +565,8 @@ def encounter_animation
   system "clear"
   puts "@======================@"
   puts "|@@@@@@@@@@@@@@@@      |"
+  puts "|                      |"
+  puts "|                      |"
   puts "|                      |"
   puts "|                      |"
   puts "|                      |"
@@ -553,6 +581,8 @@ def encounter_animation
   puts "|                      |"
   puts "|                      |"
   puts "|                      |"
+  puts "|                      |"
+  puts "|                      |"
   puts "|                   웃 |"
   puts "|//////////////////////|"
   puts "|                      |"
@@ -564,6 +594,8 @@ def encounter_animation
   puts "|                      |"
   puts "|                      |"
   puts "|                      |"
+  puts "|                      |"
+  puts "|                      |"
   puts "|                   웃 |"
   puts "|//////////////////////|"
   puts "|                      |"
@@ -572,6 +604,8 @@ def encounter_animation
   system "clear"
   puts "@======================@"
   puts "|@@@@@@@@@@@@@@@@@@@@@@|"
+  puts "|                      |"
+  puts "|                      |"
   puts "|                      |"
   puts "|                      |"
   puts "|                      |"
@@ -586,6 +620,8 @@ def encounter_animation
   puts "|@@                    |"
   puts "|                      |"
   puts "|                      |"
+  puts "|                      |"
+  puts "|                      |"
   puts "|                   웃 |"
   puts "|//////////////////////|"
   puts "|                      |"
@@ -595,6 +631,8 @@ def encounter_animation
   puts "@======================@"
   puts "|@@@@@@@@@@@@@@@@@@@@@@|"
   puts "|@@@@                  |"
+  puts "|                      |"
+  puts "|                      |"
   puts "|                      |"
   puts "|                      |"
   puts "|                   웃 |"
@@ -1374,8 +1412,10 @@ def encounter_animation
   sleep(1.0/15.0)
   system "clear"
   puts "@======================@"
+  puts "|                      |"
   puts "| :L 50                |"
   puts "| hp:______   (/◕ヮ◕)/ |"
+  puts "|                      |"
   puts "|                      |"
   puts "|    웃                |"
   puts "|@====================@|"
@@ -1397,10 +1437,4 @@ def run_animation
   puts "|@====================@|"
   puts "@======================@"
   sleep(1.0/15.0)
-end
-
-def add_six(user)
-  6.times do
-  CapturedPokemon.find_or_create_by(trainer_id: user.id, pokemon_id: (Pokemon.order("RANDOM()").first.id))
-  end
 end
