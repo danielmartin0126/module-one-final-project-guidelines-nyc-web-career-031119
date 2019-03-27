@@ -1,8 +1,9 @@
+require 'audite'
 current_user = nil
 rival_user = ""
 def welcome
-  # if trainer database is empty, run new_trainer automatically
   puts "Hi, select on option: -Log In -New Trainer -Exit"
+  start_music('./Music/Pokémon Red & Blue Music Opening Theme.mp3')
   input = gets.chomp
   if input.downcase == "log in"
     check_log_in
@@ -38,6 +39,7 @@ def new_trainer
   puts "Oak : Hello there! Welcome to the world of POKEMON! My name is OAK! People call me the POKEMON PROF! This world is inhabited by creatures called POKEMON! For some people, POKEMON are pets. Others use them for fights. Myself...I study POKEMON as a profession. First, what is your name?"
   name = gets.chomp
   current_user = Trainer.find_or_create_by(name: name)
+  CHECK IF EXISTS AND GIVE MESSAGE
   puts "Oak : Right! So your name is #{name}! This is my grandson. He's been your rival since you were a baby. ...Erm, what is his name again?"
   rival_name = gets.chomp
   rival_user = Trainer.find_or_create_by(name: rival_name)
@@ -73,8 +75,10 @@ end
 def encounter(current_user)
   if current_user.pokemons.length >= 6
     puts "You already have six Pokemon. You must release one in order to catch another Pokemon."
+    new_song('./Music/Pokémon Red & Blue Music Opening Theme.mp3')
     main_menu(current_user)
   end
+  new_song('./Music/battle.mp3')
   pokemon = Pokemon.order("RANDOM()").first
   puts "You have encountered a wild #{pokemon.name.upcase}!"
   puts pokemon.name.upcase
@@ -90,9 +94,10 @@ def catch_or_run(current_user, pokemon)
   # For Catch => can succeed or fail, success adds to pokemon list
   input = gets.chomp
   if input == "1" || input.downcase == "catch"
+    new_song('./Music/victory.mp3')
     CapturedPokemon.find_or_create_by(trainer_id: current_user.id, pokemon_id: pokemon.id)
     puts "You captured #{pokemon.name.upcase}!"
-    display_pokemon(pokemon)
+    display_pokemon(pokemon,current_user)
     another_pokemon?(current_user)
   elsif input == "2" || input.downcase == "run"
     puts "You got away safely."
@@ -106,6 +111,7 @@ end
 def another_pokemon?(current_user)
   if (CapturedPokemon.where trainer_id: current_user.id).length >= 6
     puts "You already have six Pokemon. You must release one in order to catch another Pokemon."
+    new_song('./Music/Pokémon Red & Blue Music Opening Theme.mp3')
     main_menu(current_user)
   else
     prompt = "Would you like to look for another Pokemon? y/n"
@@ -113,6 +119,7 @@ def another_pokemon?(current_user)
     when "y"
       encounter(current_user)
     when "n"
+      new_song('./Music/Pokémon Red & Blue Music Opening Theme.mp3')
       main_menu(current_user)
     end
   end
@@ -191,6 +198,7 @@ def view_team(user)
   puts "SELECT A POKEMON OR RETURN TO MAIN MENU"
   input = gets.chomp.downcase
   if input == "main menu" || input == "return"
+    new_song('./Music/Pokémon Red & Blue Music Opening Theme.mp3')
     main_menu(user)
   end
   view = user.pokemons.find_by(name: input.downcase)
@@ -204,6 +212,7 @@ def view__rival_team(user)
   puts "SELECT A POKEMON OR RETURN TO MAIN MENU"
   input = gets.chomp.downcase
   if input == "main menu" || input == "return"
+    new_song('./Music/Pokémon Red & Blue Music Opening Theme.mp3')
     main_menu(user)
   end
   view = user.pokemons.find_by(name: input.downcase)
@@ -223,4 +232,15 @@ def settings(current_user)
     puts "Invalid command"
     settings(current_user)
   end
+end
+
+def start_music(file)
+  @player = Audite.new
+  @player.load(file)
+  @player.start_stream
+end
+
+def new_song(file)
+  @player.load(file)
+  @player.start_stream
 end
