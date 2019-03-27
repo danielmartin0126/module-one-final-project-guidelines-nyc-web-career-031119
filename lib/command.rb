@@ -3,7 +3,7 @@ current_user = nil
 rival_user = ""
 def welcome
   puts "Hi, select on option: -Log In -New Trainer -Exit"
-  start_music('./Music/Pokémon Red & Blue Music Opening Theme.mp3')
+  start_music('./Music/opening.mp3')
   input = gets.chomp
   if input.downcase == "log in"
     check_log_in
@@ -75,7 +75,7 @@ end
 def encounter(current_user)
   if current_user.pokemons.length >= 6
     puts "You already have six Pokemon. You must release one in order to catch another Pokemon."
-    new_song('./Music/Pokémon Red & Blue Music Opening Theme.mp3')
+    new_song('./Music/opening.mp3')
     main_menu(current_user)
   end
   new_song('./Music/battle.mp3')
@@ -111,7 +111,7 @@ end
 def another_pokemon?(current_user)
   if (CapturedPokemon.where trainer_id: current_user.id).length >= 6
     puts "You already have six Pokemon. You must release one in order to catch another Pokemon."
-    new_song('./Music/Pokémon Red & Blue Music Opening Theme.mp3')
+    new_song('./Music/opening.mp3')
     main_menu(current_user)
   else
     prompt = "Would you like to look for another Pokemon? y/n"
@@ -119,7 +119,7 @@ def another_pokemon?(current_user)
     when "y"
       encounter(current_user)
     when "n"
-      new_song('./Music/Pokémon Red & Blue Music Opening Theme.mp3')
+      new_song('./Music/opening.mp3')
       main_menu(current_user)
     end
   end
@@ -198,7 +198,7 @@ def view_team(user)
   puts "SELECT A POKEMON OR RETURN TO MAIN MENU"
   input = gets.chomp.downcase
   if input == "main menu" || input == "return"
-    new_song('./Music/Pokémon Red & Blue Music Opening Theme.mp3')
+    new_song('./Music/opening.mp3')
     main_menu(user)
   end
   view = user.pokemons.find_by(name: input.downcase)
@@ -212,7 +212,7 @@ def view__rival_team(user)
   puts "SELECT A POKEMON OR RETURN TO MAIN MENU"
   input = gets.chomp.downcase
   if input == "main menu" || input == "return"
-    new_song('./Music/Pokémon Red & Blue Music Opening Theme.mp3')
+    new_song('./Music/opening.mp3')
     main_menu(user)
   end
   view = user.pokemons.find_by(name: input.downcase)
