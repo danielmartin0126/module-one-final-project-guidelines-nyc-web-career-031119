@@ -1,17 +1,18 @@
 current_user = nil
 rival_user = ""
 def welcome
-
- # if trainer database is empty, run new_trainer automatically
- puts "Hi, select on option: -Log In -New Trainer"
- input = gets.chomp
- if input.downcase == "log in"
-   check_log_in
- elsif input.downcase == "new trainer"
-   new_trainer
- else
-   puts "Input valid command"
-   welcome
+  # if trainer database is empty, run new_trainer automatically
+  puts "Hi, select on option: -Log In -New Trainer -Exit"
+  input = gets.chomp
+  if input.downcase == "log in"
+    check_log_in
+  elsif input.downcase == "new trainer"
+    new_trainer
+  elsif input.downcase == "exit"
+    exit
+  else
+    puts "Input valid command"
+    welcome
  end
 end
 
@@ -68,42 +69,67 @@ end
 
 
 def encounter(current_user)
-  # create new pokemon instance from api
+  # bonus- don't allow encounter if you have 6 pokemon
   pokemon = Pokemon.order("RANDOM()").first
   puts "You have encountered a wild #{pokemon.name.upcase}!"
-  # present pokemon with HP
   puts pokemon.name.upcase
   puts "L: #{pokemon.level}"
   puts "HP: #{pokemon.hp}/#{pokemon.hp}"
-  # gives option to Catch or Run
+  catch_or_run(current_user, pokemon)
+end
 
+def catch_or_run(current_user, pokemon)
   puts "Select an option:"
   puts "1. Catch"
   puts "2. Run"
-  input = gets.chomp
   # For Catch => can succeed or fail, success adds to pokemon list
+  input = gets.chomp
   if input == "1" || input.downcase == "catch"
-    binding.pry
     CapturedPokemon.find_or_create_by(trainer_id: current_user.id, pokemon_id: pokemon.id)
+    puts "You captured #{pokemon.name.upcase}!"
     display_pokemon(pokemon)
-
+    another_pokemon?(current_user)
   elsif input == "2" || input.downcase == "run"
     puts "You got away safely."
-    puts "Would you like to look for another Pokemon? y/n"
-    answer = gets.chomp
-    if answer == "y"
-      encounter
-    else
-      main_menu(current_user)
-    end
+    another_pokemon?(current_user)
+  else
+    puts "Input valid command"
+    catch_or_run(current_user, pokemon)
   end
-  main_menu(current_user)
-  # bonus- don't allow encounter if you have 6 pokemon
 end
 
-#
+def another_pokemon?(current_user)
+  prompt = "Would you like to look for another Pokemon? y/n"
+  case get_yes_or_no(prompt)
+  when "y"
+    encounter(current_user)
+  when "n"
+    main_menu(current_user)
+  end
+end
+
+def get_yes_or_no(prompt)
+  answer = ''
+  responses = ['y', 'n']
+  no_responses = ['N', 'n', 'no', 'No', 'NO', 'nah', 'Nah']
+  yes_responses = ['Yes', 'yes', 'YES', 'Y', 'y', 'ya']
+  puts prompt
+  while !responses.include?(answer)
+    answer = gets.chomp
+    if yes_responses.include?(answer)
+      answer = 'y'
+    elsif no_responses.include?(answer)
+      answer = 'n'
+    else
+      puts "Invalid command"
+      puts prompt
+    end
+  end
+  answer
+end
+
 def display_pokemon(pokemon)
-  puts "You captured #{pokemon.name.upcase}!"
+
   puts "L: #{pokemon.level}"
   puts "HP: #{pokemon.hp}"
   puts pokemon.genus
@@ -118,9 +144,12 @@ def display_pokemon(pokemon)
   puts "Defense: #{pokemon.defense}"
   puts "Special Attack: #{pokemon.special_attack}"
   puts "Special Defense: #{pokemon.special_defense}"
-  # if successful displays stats, congrats,  adds to pokemon list
-  # give nickname
-  # if fails, says too bad, gives option to look for another or go home
+
+  prompt = "More Options? y/n"
+  case get_yes_or_no(prompt)
+  when 'y'
+    puts "-Give Nickname -Release -other functions "
+  end
 end
 
 # #
