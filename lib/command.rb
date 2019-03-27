@@ -133,6 +133,7 @@ def catch_or_run(current_user, pokemon)
     display_pokemon(pokemon,current_user)
     another_pokemon?(current_user)
   elsif input.downcase == "run"
+    new_song('./Music/flee.mp3')
     run_animation
     puts ""
     another_pokemon?(current_user)
