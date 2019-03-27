@@ -48,7 +48,8 @@ end
 
 
 def main_menu(current_user)
- puts "-Catch Pokemon -View Pokemon -Trainer Lookup -Exit"
+  puts "Hi #{current_user.name}! Select an option:"
+ puts "-Catch Pokemon -View Pokemon -Trainer Lookup -Settings -Exit"
  case gets.chomp.downcase
  when "catch pokemon"
    encounter(current_user)
@@ -57,6 +58,8 @@ def main_menu(current_user)
  when "trainer lookup"
    puts "Enter a rival Trainer's name:"
    view__rival_team(Trainer.find_by(name: gets.chomp))
+ when "settings"
+   settings(current_user)
  when "exit"
    puts "Thanks for Playing"
    exit
@@ -205,4 +208,19 @@ def view__rival_team(user)
   end
   view = user.pokemons.find_by(name: input.downcase)
   display_pokemon_without_options(view, user)
+end
+
+def settings(current_user)
+  puts "Select an option:"
+  puts "1. Change Trainer name"
+  input = gets.chomp.downcase
+  if input.include?("change")
+    puts "Enter your new name:"
+    current_user.name = gets.chomp.downcase
+    current_user.save
+    main_menu(current_user)
+  else
+    puts "Invalid command"
+    settings(current_user)
+  end
 end
