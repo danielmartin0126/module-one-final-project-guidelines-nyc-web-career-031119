@@ -152,22 +152,12 @@ def display_pokemon(pokemon)
   end
 end
 
-# #
-
-#
-#
-# def view
-#   # shows list of up to 6 pokemon, option to return to main menu
-#   # bonus, set limit to 6
-#   # Select a pokemon and have options [View info, change name, release, Return(select another pokemon)]
-# end
-#
-# def view_other
-#   # input trainer name to view their info/pokemon
-#   # bonus- check whose pokemon is stronger
-#   # option to return to main menu
-# end
-#
-# def exit
-#   # exits program
-# end
+def view_team(user)
+  user.pokemons.each do |pokemon|
+    puts pokemon.name
+  end
+  puts "SELECT A POKEMON"
+  input = gets.chomp
+  view = user.pokemons.where name: input.downcase
+  display_pokemon(view) 
+end
