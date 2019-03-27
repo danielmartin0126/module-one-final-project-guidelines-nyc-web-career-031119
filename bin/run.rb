@@ -1,5 +1,5 @@
 require_relative '../config/environment'
 
-binding.pry
+# binding.pry
 puts "HELLO WORLD"
 welcome
