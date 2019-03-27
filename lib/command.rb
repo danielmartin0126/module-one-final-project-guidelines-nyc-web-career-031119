@@ -293,7 +293,6 @@ def walking
   puts "@======================@"
   sleep(1)
   system "clear"
-  puts ""
   puts "@======================@"
   puts "|                      |"
   puts "|                      |"
@@ -317,7 +316,6 @@ def walking
   puts "@======================@"
   sleep(1)
   system "clear"
-  puts ""
   puts "@======================@"
   puts "|                      |"
   puts "|                      |"
@@ -329,7 +327,6 @@ def walking
   puts "@======================@"
   sleep(1)
   system "clear"
-  puts ""
   puts "@======================@"
   puts "|                      |"
   puts "|                      |"
