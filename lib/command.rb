@@ -261,14 +261,14 @@ def pokemon_options(pokemon, current_user)
 
   case gets.chomp.downcase
   when "release pokemon"
-    doomed = CapturedPokemon.find_by(pokemon_id: pokemon.id, trainer_id: user.id)
+    doomed = CapturedPokemon.find_by(pokemon_id: pokemon.id, trainer_id: current_user.id)
     CapturedPokemon.destroy(doomed.id)
-    view_team(user)
+    view_team(current_user)
   when "change name"
   when "view team"
-    view_team(user)
+    view_team(current_user)
   when "main menu"
-    main_menu(user)
+    main_menu(current_user)
   else
     puts "Invalid command"
     pokemon_options(pokemon, current_user)
@@ -330,11 +330,11 @@ def rival_exists?(current_user)
     enter
     rival_exists?(current_user)
   end
-  view = user.pokemons.find_by(name: input.downcase)
-  display_pokemon(view, user)
+  view = current_user.pokemons.find_by(name: input.downcase)
+  display_pokemon(view, current_user)
 end
 
-def view__rival_team(user)
+def view__rival_team(rival_user, current_user)
   system "clear"
   puts "@==================================@"
   puts "#{rival_user.name}'s team\n \n"
@@ -351,13 +351,13 @@ def view__rival_team(user)
   if input == "main menu" || input == "return"
     new_song('./Music/opening.mp3')
     @rival_user = nil
-    main_menu(user)
+    main_menu(current_user)
   elsif user.pokemons.find_by(name: input.downcase)
-    display_pokemon_without_options(user.pokemons.find_by(name: input.downcase), user)
-    view__rival_team(user)
+    display_pokemon_without_options(user.pokemons.find_by(name: input.downcase), current_user)
+    view__rival_team(rival_user, current_user)
   else
     "Invalid command"
-    view__rival_team(user)
+    view__rival_team(rival_user, current_user)
   end
 end
 
