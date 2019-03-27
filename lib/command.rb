@@ -58,8 +58,7 @@ def main_menu(current_user)
  when "view pokemon"
    view_team(current_user)
  when "trainer lookup"
-   puts "Enter a rival Trainer's name:"
-   view__rival_team(Trainer.find_by(name: gets.chomp))
+   view__rival_team(current_user)
  when "settings"
    settings(current_user)
  when "exit"
@@ -97,7 +96,7 @@ def catch_or_run(current_user, pokemon)
     new_song('./Music/victory.mp3')
     CapturedPokemon.find_or_create_by(trainer_id: current_user.id, pokemon_id: pokemon.id)
     puts "You captured #{pokemon.name.upcase}!"
-    display_pokemon(pokemon,current_user)
+    display_pokemon(pokemon, current_user)
     another_pokemon?(current_user)
   elsif input == "2" || input.downcase == "run"
     puts "You got away safely."
@@ -162,7 +161,6 @@ def display_pokemon_without_options(pokemon, user)
   puts "Special Defense: #{pokemon.special_defense}"
   puts "Press any ENTER to continue"
   gets.chomp
-  view__rival_team(user)
 end
 
 def display_pokemon(pokemon, user)
@@ -180,10 +178,10 @@ def pokemon_options(pokemon, user)
   when "release pokemon"
     doomed = CapturedPokemon.find_by(pokemon_id: pokemon.id, trainer_id: user.id)
     CapturedPokemon.destroy(doomed.id)
-    view_team(user)
+
   when "change name"
   when "back"
-    display_pokemon(pokemon, user)
+    pokemon_options(pokemon, user)
   else
     puts "Invalid command"
     pokemon_options(pokemon, user)
@@ -191,32 +189,57 @@ def pokemon_options(pokemon, user)
 
 end
 
-def view_team(user)
-  user.reload.pokemons.each do |pokemon|
-    puts pokemon.name
+def view_team(current_user)
+  if (CapturedPokemon.where trainer_id: current_user.id).length == 0
+    puts "You have no pokemon! Returning to main menu"
+    main_menu(current_user)
+  else
+    current_user.reload.pokemons.each do |pokemon|
+      puts pokemon.name
+    end
+    puts "SELECT A POKEMON OR RETURN TO MAIN MENU"
+    input = gets.chomp.downcase
+    if input == "main menu" || input == "return"
+      new_song('./Music/opening.mp3')
+      main_menu(current_user)
+    end
+    view = current_user.pokemons.find_by(name: input.downcase)
+    display_pokemon(view, current_user)
+    view_team(current_user)
   end
-  puts "SELECT A POKEMON OR RETURN TO MAIN MENU"
-  input = gets.chomp.downcase
-  if input == "main menu" || input == "return"
-    new_song('./Music/opening.mp3')
-    main_menu(user)
-  end
-  view = user.pokemons.find_by(name: input.downcase)
-  display_pokemon(view, user)
 end
 
-def view__rival_team(user)
-  user.reload.pokemons.each do |pokemon|
-    puts pokemon.name
+def rival_exists?
+  puts "Enter a rival Trainer's name:"
+  @rival_user = Trainer.find_by(name: gets.chomp)
+  if !@rival_user
+    puts "Trainer does not exist"
+    rival_exists?
   end
+  if (CapturedPokemon.where trainer_id: @rival_user.id).length == 0
+    puts "This trainer has no pokemon!"
+    rival_exists?
+  end
+end
+
+def view__rival_team(current_user)
+  if !@rival_user
+    rival_exists?
+  end
+    @rival_user.reload.pokemons.each do |pokemon|
+      puts pokemon.name
+    end
   puts "SELECT A POKEMON OR RETURN TO MAIN MENU"
-  input = gets.chomp.downcase
-  if input == "main menu" || input == "return"
+  input = gets.chomp
+  rival_pokemon = @rival_user.pokemons.find_by(name: input)
+  if input.downcase == "main menu" || input.downcase == "return"
     new_song('./Music/opening.mp3')
-    main_menu(user)
+    @rival_user = nil
+    main_menu(current_user)
+  else
+    display_pokemon_without_options(rival_pokemon, current_user)
+    view__rival_team(current_user)
   end
-  view = user.pokemons.find_by(name: input.downcase)
-  display_pokemon_without_options(view, user)
 end
 
 def settings(current_user)
