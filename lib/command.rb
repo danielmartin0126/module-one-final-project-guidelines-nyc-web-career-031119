@@ -79,18 +79,33 @@ def catch_or_run(current_user, pokemon)
 end
 
 def another_pokemon?(current_user)
-  puts "Would you like to look for another Pokemon? y/n"
-  while answer = gets.chomp
-    case answer
-    when "y"
-      encounter(current_user)
-    when "n"
-      main_menu(current_user)
+  prompt = "Would you like to look for another Pokemon? y/n"
+  case get_yes_or_no(prompt)
+  when "y"
+    encounter(current_user)
+  when "n"
+    main_menu(current_user)
+  end
+end
+
+def get_yes_or_no(prompt)
+  answer = ''
+  responses = ['y', 'n']
+  no_responses = ['N', 'n', 'no', 'No', 'NO', 'nah', 'Nah']
+  yes_responses = ['Yes', 'yes', 'YES', 'Y', 'y', 'ya']
+  puts prompt
+  while !responses.include?(answer)
+    answer = gets.chomp
+    if yes_responses.include?(answer)
+      answer = 'y'
+    elsif no_responses.include?(answer)
+      answer = 'n'
     else
-      puts "Input valid command"
-      puts "Would you like to look for another Pokemon? y/n"
+      puts "Invalid command"
+      puts prompt
     end
   end
+  answer
 end
 
 def display_pokemon(pokemon)
@@ -108,9 +123,12 @@ def display_pokemon(pokemon)
   puts pokemon.defense
   puts pokemon.special_attack
   puts pokemon.special_defense
-  # if successful displays stats, congrats,  adds to pokemon list
-  # give nickname
-  # if fails, says too bad, gives option to look for another or go home
+
+  prompt = "More Options? y/n"
+  case get_yes_or_no(prompt)
+  when 'y'
+    puts "-Give Nickname -Release -other functions "
+  end
 end
 # #
 
