@@ -78,6 +78,7 @@ def encounter(current_user)
     new_song('./Music/opening.mp3')
     main_menu(current_user)
   end
+  walking
   new_song('./Music/battle.mp3')
   pokemon = Pokemon.order("RANDOM()").first
   puts "A wild #{pokemon.name.upcase} appeared!"
@@ -277,4 +278,65 @@ end
 def new_song(file)
   @player.load(file)
   @player.start_stream
+end
+
+def walking
+  system "clear"
+  puts "@======================@"
+  puts "|                      |"
+  puts "|                      |"
+  puts "|                      |"
+  puts "|                      |"
+  puts "|  웃                  |"
+  puts "|//////////////////////|"
+  puts "|                      |"
+  puts "@======================@"
+  sleep(1)
+  system "clear"
+  puts ""
+  puts "@======================@"
+  puts "|                      |"
+  puts "|                      |"
+  puts "|                      |"
+  puts "|                      |"
+  puts "|     웃               |"
+  puts "|//////////////////////|"
+  puts "|                      |"
+  puts "@======================@"
+  sleep(1)
+  system "clear"
+  puts ""
+  puts "@======================@"
+  puts "|                      |"
+  puts "|                      |"
+  puts "|                      |"
+  puts "|                      |"
+  puts "|         웃           |"
+  puts "|//////////////////////|"
+  puts "|                      |"
+  puts "@======================@"
+  sleep(1)
+  system "clear"
+  puts ""
+  puts "@======================@"
+  puts "|                      |"
+  puts "|                      |"
+  puts "|                      |"
+  puts "|                      |"
+  puts "|              웃      |"
+  puts "|//////////////////////|"
+  puts "|                      |"
+  puts "@======================@"
+  sleep(1)
+  system "clear"
+  puts ""
+  puts "@======================@"
+  puts "|                      |"
+  puts "|                      |"
+  puts "|                      |"
+  puts "|                      |"
+  puts "|                   웃 |"
+  puts "|//////////////////////|"
+  puts "|                      |"
+  puts "@======================@"
 end
