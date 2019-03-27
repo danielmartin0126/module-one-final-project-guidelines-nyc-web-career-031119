@@ -48,16 +48,15 @@ end
 
 
 def main_menu(current_user)
- puts "-Catch Pokemon -View Pokemon -Rivals Lookup -Exit"
+ puts "-Catch Pokemon -View Pokemon -Trainer Lookup -Exit"
  case gets.chomp.downcase
  when "catch pokemon"
-   puts 1
    encounter(current_user)
  when "view pokemon"
    view_team(current_user)
- when "rivals lookup"
-   # view_team()
-   puts "3"
+ when "trainer lookup"
+   puts "Enter a rival Trainer's name:"
+   view__rival_team(Trainer.find_by(name: gets.chomp))
  when "exit"
    puts "Thanks for Playing"
    exit
@@ -136,7 +135,7 @@ def get_yes_or_no(prompt)
   answer
 end
 
-def display_pokemon(pokemon, user)
+def display_pokemon_without_options(pokemon, user)
   puts "L: #{pokemon.level}"
   puts "HP: #{pokemon.hp}"
   puts pokemon.genus
@@ -151,7 +150,13 @@ def display_pokemon(pokemon, user)
   puts "Defense: #{pokemon.defense}"
   puts "Special Attack: #{pokemon.special_attack}"
   puts "Special Defense: #{pokemon.special_defense}"
+  puts "Press any ENTER to continue"
+  gets.chomp
+  view__rival_team(user)
+end
 
+def display_pokemon(pokemon, user)
+  display_pokemon_without_options(pokemon, user)
   prompt = "More Options? y/n"
   case get_yes_or_no(prompt)
   when 'y'
@@ -177,15 +182,27 @@ def pokemon_options(pokemon, user)
 end
 
 def view_team(user)
-  binding.pry
   user.reload.pokemons.each do |pokemon|
     puts pokemon.name
   end
-  puts "SELECT A POKEMON"
-  input = gets.chomp
-  if input == "main menu"
+  puts "SELECT A POKEMON OR RETURN TO MAIN MENU"
+  input = gets.chomp.downcase
+  if input == "main menu" || input == "return"
     main_menu(user)
   end
   view = user.pokemons.find_by(name: input.downcase)
   display_pokemon(view, user)
+end
+
+def view__rival_team(user)
+  user.reload.pokemons.each do |pokemon|
+    puts pokemon.name
+  end
+  puts "SELECT A POKEMON OR RETURN TO MAIN MENU"
+  input = gets.chomp.downcase
+  if input == "main menu" || input == "return"
+    main_menu(user)
+  end
+  view = user.pokemons.find_by(name: input.downcase)
+  display_pokemon_without_options(view, user)
 end
