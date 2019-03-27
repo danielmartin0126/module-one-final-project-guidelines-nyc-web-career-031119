@@ -159,5 +159,6 @@ def view_team(user)
   puts "SELECT A POKEMON"
   input = gets.chomp
   view = user.pokemons.where name: input.downcase
-  display_pokemon(view) 
+  binding.
+  display_pokemon(view[0])
 end
