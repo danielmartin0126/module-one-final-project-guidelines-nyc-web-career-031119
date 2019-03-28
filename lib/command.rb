@@ -2,6 +2,7 @@ require 'audite'
 require 'colorize'
 current_user = nil
 rival_user = ""
+
 def welcome
 start_music('./Music/opening.mp3')
 
@@ -103,9 +104,10 @@ def encounter(current_user)
     new_song('./Music/opening.mp3')
     main_menu(current_user)
   end
+  walking
   new_song('./Music/battle.mp3')
   pokemon = Pokemon.order("RANDOM()").first
-  puts "You have encountered a wild #{pokemon.name.upcase}!"
+  puts "A wild #{pokemon.name.upcase} appeared!"
   puts pokemon.name.upcase
   puts "L: #{pokemon.level}"
   puts "HP: #{pokemon.hp}/#{pokemon.hp}"
@@ -215,15 +217,40 @@ def pokemon_options(pokemon, user)
 
 end
 
-def view_team(user)
-  user.reload.pokemons.each do |pokemon|
-    puts pokemon.name
+def view_team(current_user)
+  if (CapturedPokemon.where trainer_id: current_user.id).length == 0
+    puts "You have no pokemon! Returning to main menu"
+    main_menu(current_user)
+  else
+    current_user.reload.pokemons.each do |pokemon|
+      puts pokemon.name
+    end
+    puts "SELECT A POKEMON OR RETURN TO MAIN MENU"
+    input = gets.chomp.downcase
+    if input == "main menu" || input == "return"
+      new_song('./Music/opening.mp3')
+      main_menu(current_user)
+    elsif current_user.pokemons.find_by(name: input)
+      view = current_user.pokemons.find_by(name: input)
+      display_pokemon(view, current_user)
+      view_team(current_user)
+    else
+      puts "Invalid command"
+      view_team(current_user)
+    end
   end
-  puts "SELECT A POKEMON OR RETURN TO MAIN MENU"
-  input = gets.chomp.downcase
-  if input == "main menu" || input == "return"
-    new_song('./Music/opening.mp3')
-    main_menu(user)
+end
+
+def rival_exists?
+  puts "Enter a rival trainer's name:"
+  @rival_user = Trainer.find_by(name: gets.chomp)
+  if !@rival_user
+    puts "Trainer does not exist"
+    rival_exists?
+  end
+  if (CapturedPokemon.where trainer_id: @rival_user.id).length == 0
+    puts "This trainer has no pokemon!"
+    rival_exists?
   end
   view = user.pokemons.find_by(name: input.downcase)
   display_pokemon(view, user)
@@ -237,7 +264,14 @@ def view__rival_team(user)
   input = gets.chomp.downcase
   if input == "main menu" || input == "return"
     new_song('./Music/opening.mp3')
-    main_menu(user)
+    @rival_user = nil
+    main_menu(current_user)
+  elsif rival_pokemon
+    display_pokemon_without_options(rival_pokemon, current_user)
+    view__rival_team(current_user)
+  else
+    "Invalid command"
+    view__rival_team(current_user)
   end
   view = user.pokemons.find_by(name: input.downcase)
   display_pokemon_without_options(view, user)
@@ -246,11 +280,14 @@ end
 def settings(current_user)
   puts "Select an option:"
   puts "1. Change Trainer name"
+  puts "2. Back"
   input = gets.chomp.downcase
   if input.include?("change")
     puts "Enter your new name:"
     current_user.name = gets.chomp.downcase
     current_user.save
+    main_menu(current_user)
+  elsif input.include?('back')
     main_menu(current_user)
   else
     puts "Invalid command"
@@ -267,4 +304,62 @@ end
 def new_song(file)
   @player.load(file)
   @player.start_stream
+end
+
+def walking
+  system "clear"
+  puts "@======================@"
+  puts "|                      |"
+  puts "|                      |"
+  puts "|                      |"
+  puts "|                      |"
+  puts "|  웃                  |"
+  puts "|//////////////////////|"
+  puts "|                      |"
+  puts "@======================@"
+  sleep(1)
+  system "clear"
+  puts "@======================@"
+  puts "|                      |"
+  puts "|                      |"
+  puts "|                      |"
+  puts "|                      |"
+  puts "|     웃               |"
+  puts "|//////////////////////|"
+  puts "|                      |"
+  puts "@======================@"
+  sleep(1)
+  system "clear"
+  puts ""
+  puts "@======================@"
+  puts "|                      |"
+  puts "|                      |"
+  puts "|                      |"
+  puts "|                      |"
+  puts "|         웃           |"
+  puts "|//////////////////////|"
+  puts "|                      |"
+  puts "@======================@"
+  sleep(1)
+  system "clear"
+  puts "@======================@"
+  puts "|                      |"
+  puts "|                      |"
+  puts "|                      |"
+  puts "|                      |"
+  puts "|              웃      |"
+  puts "|//////////////////////|"
+  puts "|                      |"
+  puts "@======================@"
+  sleep(1)
+  system "clear"
+  puts "@======================@"
+  puts "|                      |"
+  puts "|                      |"
+  puts "|                      |"
+  puts "|                      |"
+  puts "|                   웃 |"
+  puts "|//////////////////////|"
+  puts "|                      |"
+  puts "@======================@"
 end
