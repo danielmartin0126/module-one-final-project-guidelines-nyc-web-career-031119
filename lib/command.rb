@@ -138,6 +138,8 @@ def encounter(current_user)
     puts "@============================================@"
     puts " You already have six Pokemon. You must release one in order to catch another Pokemon."
     puts "@============================================@"
+    puts "Press ENTER to continue"
+    gets.chomp
     new_song('./Music/opening.mp3')
     main_menu(current_user)
   end
