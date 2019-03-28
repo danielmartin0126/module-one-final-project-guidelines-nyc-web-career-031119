@@ -53,7 +53,7 @@ def check_log_in
   puts "@==================================@"
   puts "Enter your username:"
   puts "@==================================@"
-  user_name = gets.chomp
+  user_name = gets.chomp.upcase
   if Trainer.exists? name: user_name
     current_user = Trainer.where name: user_name
     main_menu(current_user[0])
@@ -63,14 +63,16 @@ def check_log_in
 end
 
 def wrong_log_in
+  system 'clear'
   puts "@==================================@"
-  puts "The is currently no account with that username. Would you like to try again or create new account?"
+  puts "That username does not exist. Would"
+  puts "you like to try again or create new account?"
   puts "Enter your username or New Account"
   puts "@==================================@"
   response = gets.chomp
-  if Trainer.exists? name: response
+  if Trainer.exists? name: response.upcase
     current_user = Trainer.where name: response
-    main_menu(current_user[0])
+    main_menu(current_user)
   elsif response.downcase == "new account"
     new_trainer
   else
@@ -78,18 +80,21 @@ def wrong_log_in
   end
 end
 
+def enter
+  puts "Press ENTER to continue"
+  gets.chomp
+end
+
 def new_trainer
   system "clear"
 
   puts "@==============================================================================@"
-
   puts "  Oak : Hello there! Welcome to the world of POKEMON! My name is OAK!\n  People call me the POKEMON PROF! This world is inhabited by creatures \n  called POKEMON! For some people, POKEMON are pets. Others use them for \n  fights. Myself...I study POKEMON as a profession. First, what is your name?"
   puts "@==============================================================================@"
 
-  name = gets.chomp
+  name = gets.chomp.upcase
   current_user = Trainer.find_or_create_by(name: name)
   puts "@==============================================================================@"
-
   puts "  Oak : Right! So your name is #{name}! This is my grandson. He's been your rival \n  since you were a baby. ...Erm, what is his name again?"
   puts "@==============================================================================@"
 
@@ -100,20 +105,20 @@ def new_trainer
     puts "@==============================================================================@"
     rival_name = gets.chomp
   end
-
+  
   rival_user = Trainer.find_or_create_by(name: rival_name)
   add_six(rival_user)
 
   puts "@==============================================================================@"
   puts "  Oak : That's right! I remember now! His name is #{rival_name}! #{name}! Your very own \n POKEMON legend is about to unfold! A world of dreams and adventures with \n POKEMON awaits! Let's go!"
   puts "@==============================================================================@"
+  enter
   main_menu(current_user)
 end
 
 def main_menu(current_user)
   system "clear"
   puts "@==============================================================@"
-
   puts " Hi #{current_user.name}! Select an option:\n "
  puts " -Catch Pokemon\n -View Pokemon\n -Trainer Lookup\n -Settings\n -Exit"
  puts "@==============================================================@"
@@ -125,11 +130,7 @@ def main_menu(current_user)
    view_team(current_user)
  when "trainer lookup"
    system "clear"
-   puts "@==================================@"
-   puts " Enter a rival Trainer's name:"
-   puts "@==================================@"
-
-   view__rival_team(Trainer.find_by(name: gets.chomp))
+   rival_exists?(current_user)
  when "settings"
    settings(current_user)
  when "exit"
@@ -137,6 +138,7 @@ def main_menu(current_user)
    exit
  else
    puts "Input valid commannd!"
+   enter
    main_menu(current_user)
  end
 end
@@ -144,11 +146,10 @@ end
 
 def encounter(current_user)
   if current_user.pokemons.length >= 6
-    puts "@============================================@"
+    puts "@==============================================================@"
     puts " You already have six Pokemon. You must release one in order to catch another Pokemon."
-    puts "@============================================@"
-    puts "Press ENTER to continue"
-    gets.chomp
+    puts "@==============================================================@"
+    enter
     new_song('./Music/opening.mp3')
     main_menu(current_user)
   end
@@ -243,9 +244,7 @@ def display_pokemon_without_options(pokemon, user)
   puts "  Special Defense: #{pokemon.special_defense}"
   puts "@==================================@\n "
   puts "#{pokemon.flavor_text}\n "
-
-  puts "Press ENTER to continue"
-  gets.chomp
+  enter
 end
 
 def display_pokemon(pokemon, user)
@@ -280,13 +279,15 @@ def pokemon_options(pokemon, user)
 end
 
 def view_team(current_user)
-  system "clear"
+
   if (CapturedPokemon.where trainer_id: current_user.id).length == 0
     puts "You have no pokemon! Returning to main menu"
+    enter
     main_menu(current_user)
   else
+    system "clear"
     puts "@==================================@"
-    puts "#{current_user.name.upcase}'s team\n \n"
+    puts "#{current_user.name}'s team\n \n"
     puts "--------------"
 
     current_user.reload.pokemons.each do |pokemon|
@@ -313,15 +314,24 @@ end
 
 def rival_exists?
   system "clear"
-  puts "Enter a rival trainer's name:"
-  @rival_user = Trainer.find_by(name: gets.chomp)
-  if !@rival_user
-    puts "Trainer does not exist"
-    rival_exists?
-  end
-  if (CapturedPokemon.where trainer_id: @rival_user.id).length == 0
+  puts "@==================================@"
+  puts " Enter a rival Trainer's name:"
+  puts "@==================================@"
+  answer = gets.chomp.upcase
+  @rival_user = Trainer.find_by(name: answer)
+  if answer == 'BACK' || answer.include?('menu')
+    main menu(current_user)
+  elsif !@rival_user
+    system "clear"
+    puts "@==================================@"
+    puts "#{answer} does not exist"
+    puts "@==================================@"
+    enter
+    rival_exists?(current_user)
+  elsif (CapturedPokemon.where trainer_id: @rival_user.id).length == 0
     puts "This trainer has no pokemon!"
-    rival_exists?
+    enter
+    rival_exists?(current_user)
   end
   view = user.pokemons.find_by(name: input.downcase)
   display_pokemon(view, user)
@@ -330,7 +340,7 @@ end
 def view__rival_team(user)
   system "clear"
   puts "@==================================@"
-  puts "#{user.name.upcase}'s team\n \n"
+  puts "#{rival_user.name}'s team\n \n"
   puts "--------------"
 
   user.reload.pokemons.each do |pokemon|
@@ -367,7 +377,7 @@ def settings(current_user)
   if input.include?("change")
     system "clear"
     puts "Enter your new name:"
-    current_user.name = gets.chomp.downcase
+    current_user.name = gets.chomp.upcase
     current_user.save
     main_menu(current_user)
   elsif input.include?('back')
