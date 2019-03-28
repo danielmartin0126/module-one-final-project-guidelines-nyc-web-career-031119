@@ -4,33 +4,35 @@ require 'table_print'
 current_user = nil
 
 def welcome
-  system 'clear'
-  start_music('./Music/opening.mp3')
-  puts "                            .;:**'             MMM"
-  puts "                             `                  0"
-  puts "  .:XHHHHk.             db.   .;;.     dH  MX   0"
-  puts "oMMMMMMMMMMM      ~MM  dMMP :MMMMMR   MMM  MR      ~MRMN"
-  puts "QMMMMMb  'MMX      MMMMMMP lMX  :M~   MMM MMM  .oo. XMMM 'MMM"
-  puts "`MMMM.  )M> :XlHk. MMMM    XMM.oP    MMMMMMM X?XMMM MMM> MMP"
-  puts " 'MMMb.dMl XM M''M MMMMMX.`MMMMMMMM~ MM MMM XM    MX MM XMM"
-  puts "  ~MMMMM~ XMM. .XM XM`'MMMb.~*?**~ .MMX M Mt MbooMM XMMMMMP"
-  puts "   ?MMM>  YMMMMMM! MM   `?MMRb.    `'''   lL MMMM XM IMMM"
-  puts "    MMMX   'MMMM'  MM       ~%:           lMh.'''dMI IMMP"
-  puts "    'MMM.                                             IMX"
-  puts "     ~MlM                                             IMP"
-  puts
-  puts
-  puts "                          FLATIRON EDITION"
-  puts
-  puts
-  puts
-  puts
-  puts "                         Press ENTER to begin"
-  gets.chomp
-  system "clear"
-  puts "@==================================@"
-  puts "Hi, select on option:\n -Log In\n -New Trainer\n -Exit"
-  puts "@==================================@"
+system 'clear'
+start_music('./Music/opening.mp3')
+
+puts "                            .;:**'             MMM"
+puts "                             `                  0"
+puts "  .:XHHHHk.             db.   .;;.     dH  MX   0"
+puts "oMMMMMMMMMMM      ~MM  dMMP :MMMMMR   MMM  MR      ~MRMN"
+puts "QMMMMMb  'MMX      MMMMMMP lMX  :M~   MMM MMM  .oo. XMMM 'MMM"
+puts "`MMMM.  )M> :XlHk. MMMM    XMM.oP    MMMMMMM X?XMMM MMM> MMP"
+puts " 'MMMb.dMl XM M''M MMMMMX.`MMMMMMMM~ MM MMM XM    MX MM XMM"
+puts "  ~MMMMM~ XMM. .XM XM`'MMMb.~*?**~ .MMX M Mt MbooMM XMMMMMP"
+puts "   ?MMM>  YMMMMMM! MM   `?MMRb.    `'''   lL MMMM XM IMMM"
+puts "    MMMX   'MMMM'  MM       ~%:           lMh.'''dMI IMMP"
+puts "    'MMM.                                             IMX"
+puts "     ~MlM                                             IMP"
+
+puts
+puts
+puts "                          FLATIRON EDITION"
+puts
+puts
+puts
+puts
+puts "                         Press ENTER to begin"
+gets.chomp
+system "clear"
+puts "@==================================@"
+puts "Hi, select on option:\n -Log In\n -New Trainer\n -Exit"
+puts "@==================================@"
 
   input = gets.chomp
   if input.downcase == "log in"
@@ -96,8 +98,17 @@ def new_trainer
   puts "  Oak : Right! So your name is #{name}! This is my grandson. He's been your rival \n  since you were a baby. ...Erm, what is his name again?"
   puts "@==============================================================================@"
 
-  rival_name = gets.chomp.upcase
+  rival_name = gets.chomp
+  while Trainer.exists? name: rival_name
+    puts "@==============================================================================@"
+    puts "Oh no that's not #{rival_name}, he's my other grandson! What is this ones name?"
+    puts "@==============================================================================@"
+    rival_name = gets.chomp
+  end
+  
   rival_user = Trainer.find_or_create_by(name: rival_name)
+  add_six(rival_user)
+
   puts "@==============================================================================@"
   puts "  Oak : That's right! I remember now! His name is #{rival_name}! #{name}! Your very own \n POKEMON legend is about to unfold! A world of dreams and adventures with \n POKEMON awaits! Let's go!"
   puts "@==============================================================================@"
@@ -109,8 +120,8 @@ def main_menu(current_user)
   system "clear"
   puts "@==============================================================@"
   puts " Hi #{current_user.name}! Select an option:\n "
-  puts " -Catch Pokemon\n -View Pokemon\n -Trainer Lookup\n -Settings\n -Exit"
-  puts "@==============================================================@"
+ puts " -Catch Pokemon\n -View Pokemon\n -Trainer Lookup\n -Settings\n -Exit"
+ puts "@==============================================================@"
 
  case gets.chomp.downcase
  when "catch pokemon"
@@ -131,6 +142,7 @@ def main_menu(current_user)
    main_menu(current_user)
  end
 end
+
 
 def encounter(current_user)
   if current_user.pokemons.length >= 6
@@ -213,7 +225,7 @@ def get_yes_or_no(prompt)
   answer
 end
 
-def display_pokemon_without_options(pokemon, current_user)
+def display_pokemon_without_options(pokemon, user)
   system "clear"
   puts "@==================================@"
   puts "  #{pokemon.name.upcase}"
@@ -235,33 +247,33 @@ def display_pokemon_without_options(pokemon, current_user)
   enter
 end
 
-def display_pokemon(pokemon, current_user)
-  display_pokemon_without_options(pokemon, current_user)
+def display_pokemon(pokemon, user)
+  display_pokemon_without_options(pokemon, user)
   prompt = "More Options? y/n"
   case get_yes_or_no(prompt)
   when 'y'
-    pokemon_options(pokemon,current_user)
+    pokemon_options(pokemon,user)
   end
 end
 
-def pokemon_options(pokemon, current_user)
+def pokemon_options(pokemon, user)
   puts "@==================================@"
   puts " -Release Pokemon\n -View Team\n -Main Menu"
   puts "@==================================@"
 
   case gets.chomp.downcase
   when "release pokemon"
-    doomed = CapturedPokemon.find_by(pokemon_id: pokemon.id, trainer_id: current_user.id)
+    doomed = CapturedPokemon.find_by(pokemon_id: pokemon.id, trainer_id: user.id)
     CapturedPokemon.destroy(doomed.id)
-    view_team(current_user)
+    view_team(user)
   when "change name"
   when "view team"
-    view_team(current_user)
+    view_team(user)
   when "main menu"
-    main_menu(current_user)
+    main_menu(user)
   else
     puts "Invalid command"
-    pokemon_options(pokemon, current_user)
+    pokemon_options(pokemon, user)
   end
 
 end
@@ -300,7 +312,7 @@ def view_team(current_user)
   end
 end
 
-def rival_exists?(current_user)
+def rival_exists?
   system "clear"
   puts "@==================================@"
   puts " Enter a rival Trainer's name:"
@@ -321,16 +333,17 @@ def rival_exists?(current_user)
     enter
     rival_exists?(current_user)
   end
-  view__rival_team(@rival_user, current_user)
+  view = user.pokemons.find_by(name: input.downcase)
+  display_pokemon(view, user)
 end
 
-def view__rival_team(rival_user, current_user)
+def view__rival_team(user)
   system "clear"
   puts "@==================================@"
   puts "#{rival_user.name}'s team\n \n"
   puts "--------------"
 
-  rival_user.reload.pokemons.each do |pokemon|
+  user.reload.pokemons.each do |pokemon|
     puts pokemon.name.upcase
     puts "--------------"
   end
@@ -341,12 +354,13 @@ def view__rival_team(rival_user, current_user)
   if input == "main menu" || input == "return"
     new_song('./Music/opening.mp3')
     @rival_user = nil
-    main_menu(current_user)
-  elsif rival_user.pokemons.find_by(name: input.downcase)
-    display_pokemon_without_options(rival_user.pokemons.find_by(name: input.downcase), current_user)
-    view__rival_team(rival_user, current_user)
+    main_menu(user)
+  elsif user.pokemons.find_by(name: input.downcase)
+    display_pokemon_without_options(user.pokemons.find_by(name: input.downcase), user)
+    view__rival_team(user)
   else
-    view__rival_team(rival_user, current_user)
+    "Invalid command"
+    view__rival_team(user)
   end
 end
 
@@ -1383,4 +1397,10 @@ def run_animation
   puts "|@====================@|"
   puts "@======================@"
   sleep(1.0/15.0)
+end
+
+def add_six(user)
+  6.times do
+  CapturedPokemon.find_or_create_by(trainer_id: user.id, pokemon_id: (Pokemon.order("RANDOM()").first.id))
+  end
 end
